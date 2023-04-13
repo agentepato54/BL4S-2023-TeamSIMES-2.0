@@ -1,4 +1,4 @@
-### Synthetic data generation with Monte Carlo simulation for the training of CNNs.
+###Synthetic data generation with Monte Carlo simulation for the training of CNNs.
 
 This Repo contains all the uncompiled code for the GEANT4 simulation that was used in our project and the custom scripts that were generated to extract the Monte Carlo simulation data.
 
