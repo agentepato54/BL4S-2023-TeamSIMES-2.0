@@ -1,0 +1,18 @@
+# Macro file for example tutorial
+# 
+# Can be run in batch, without graphic
+# or interactively: Idle> /control/execute run1.mac
+#
+# Defaults:
+# armAngle 30. deg
+# field value: 1.0*tesla
+/run/verbose 1
+/run/initialize
+/run/printProgress 1000
+/random/setSeeds 848258 848278
+/gun/particle e-
+/tutorial/generator/momentum 1 GeV
+/gun/number 100
+/run/beamOn 1000 
+#
+
