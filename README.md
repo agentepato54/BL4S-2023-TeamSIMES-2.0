@@ -6,7 +6,8 @@ This Repo contains all the uncompiled code for the GEANT4 simulation that was us
 
 The project uses Geant4 v10.5.0. To use the graphical interface Geant4 must be installed acordingly. It is not necesary to use the graphical interface when running the simulation with our custom scripts.
 
-To replicate our data extraction system. you must execute "./generate.sh" this will start the simulation pipeline
+To replicate our data extraction system. you must execute "./generate.sh" this will start the simulation pipeline (CURRENTLY NOT WORKING)
+To simulate our experimental setup, without data collection, run the exeutable generated post compilation.
 
 A GitHub repository containing all GEANT4 simulation files is available [here](https://colab.research.google.com/drive/1W_xtL3fsxVUiA3LB3cDJhsmJUMBwVITR?usp=sharing).
 
