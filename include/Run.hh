@@ -51,5 +51,14 @@ public:
 
   virtual void RecordEvent(const G4Event*);
   virtual void Merge(const G4Run*);
+    G4double GetEmEnergy() const { return em_ene; }
+    G4double GetHadEnergy() const { return had_ene; }
+    G4double GetShowerShape() const { return shower_shape; }
+private:
+    G4double em_ene;
+    G4double had_ene;
+    G4double shower_shape;
+    G4int ECHCID;
+    G4int HCHCID;
 };
 #endif

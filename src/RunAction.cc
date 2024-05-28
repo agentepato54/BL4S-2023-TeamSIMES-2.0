@@ -37,7 +37,6 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-
 RunAction::RunAction()
  : G4UserRunAction()
 {
@@ -62,6 +61,40 @@ RunAction::RunAction()
   // Create analysis manager
   // The choice of analysis technology is done via selectin of a namespace
   // in Analysis.hh
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  G4cout << "Using " << analysisManager->GetType() << G4endl;
+
+  // Default settings
+  analysisManager->SetVerboseLevel(1);
+  analysisManager->SetFileName("Tutorial");
+
+  // Creating 2D histograms
+  analysisManager                                                
+    ->CreateH2("CHC1_XY","Em Cal Colum 1 X vs Y",           // h2 Id = 0
+               50, -1000., 1000, 50, -300., 300.); 
+  analysisManager                                                
+    ->CreateH2("CHC2_XY","Em Cal Colum 2 X vs Y",           // h2 Id = 1
+               50, -1500., 1500, 50, -300., 300.);
+
+
+  // Creating ntuple
+  //
+  analysisManager->CreateNtuple("Tutorial", "Hits");
+  analysisManager->CreateNtupleDColumn("SC1Energy"); // column Id = 2
+  analysisManager->CreateNtupleDColumn("EmEnergy"); // column Id = 3
+  analysisManager->CreateNtupleDColumn("SC2Energy");    // column Id = 4
+  analysisManager->CreateNtupleDColumn("EmC11Energy");    // column Id = 4
+  analysisManager->CreateNtupleDColumn("EmC12Energy"); 
+  analysisManager->CreateNtupleDColumn("EmC13Energy");    // column Id = 4
+  analysisManager->CreateNtupleDColumn("EmC21Energy"); 
+  analysisManager->CreateNtupleDColumn("EmC22Energy"); 
+  analysisManager->CreateNtupleDColumn("EmC23Energy"); 
+  analysisManager->CreateNtupleDColumn("EmC31Energy"); 
+  analysisManager->CreateNtupleDColumn("EmC32Energy"); 
+  analysisManager->CreateNtupleDColumn("EmC33Energy"); 
+  analysisManager->CreateNtupleDColumn("EmTotalEnergy");
+  analysisManager->CreateNtupleDColumn("RealTotalEnergy");
+  analysisManager->FinishNtuple();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -76,6 +109,13 @@ RunAction::~RunAction()
 void RunAction::BeginOfRunAction(const G4Run* /*run*/)
 {
 
+    
+  //inform the runManager to save random number seed
+  //G4RunManager::GetRunManager()->SetRandomNumberStore(true);
+  
+  // Get analysis manager
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+
   //=================================
   // Exercise 3 Step 2:
   // Open output file at each new run
@@ -83,6 +123,7 @@ void RunAction::BeginOfRunAction(const G4Run* /*run*/)
     // Open an output file
   // The default file name is set in RunAction::RunAction(),
   // it can be overwritten in a macro
+  analysisManager->OpenFile();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -90,15 +131,41 @@ void RunAction::BeginOfRunAction(const G4Run* /*run*/)
 //=================================
 // Exercise 2:
 // Collect the energy accumulated in the local Run
-// And dump on screen the physics quantities
+// And dump on screen the needed physics quantities
 // for this particular run.
 void RunAction::EndOfRunAction(const G4Run* run)
 {
+    const Run* myrun = dynamic_cast<const Run*>(run);
+    if ( myrun )
+    {
+        G4int nEvents = myrun->GetNumberOfEvent();
+        if ( nEvents < 1 )
+        {
+            G4ExceptionDescription msg;
+            msg << "Run consists of 0 events";
+            G4Exception("RunAction::EndOfRunAction()",
+                        "Code001", JustWarning, msg);
+        }
+        G4double em_ene = myrun->GetEmEnergy();
+        G4double had_ene = myrun->GetHadEnergy();
+        G4double shower_shape = myrun->GetShowerShape();
+	G4int safety = ( nEvents > 0 ? nEvents : 1);//To avoid divisions by zero
+    } else {
+        G4ExceptionDescription msg;
+        msg << "Run is not of correct type, skypping analysis via RunAction";
+        G4Exception("RunAction::EndOfRunAction()",
+                    "Code001", JustWarning, msg);
+    }
     
   //=================================
   // Exercise 3 Step 3:
   // Write and close output file
     
+  // save histograms & ntuple
+  //
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  analysisManager->Write();
+  analysisManager->CloseFile();
 
 }
 
@@ -110,6 +177,6 @@ void RunAction::EndOfRunAction(const G4Run* run)
 // instead of creating a generic G4Run
 // create a user-defined Run
 G4Run* RunAction::GenerateRun() {
-    return new G4Run;
+    return new Run;
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
